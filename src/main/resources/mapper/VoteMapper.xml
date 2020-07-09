@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.VoteDao">
+
+    <resultMap type="VoteInfo" id="VoteResultMap">
+        <id property="voteId" column="vote_id"/>
+        <result property="voteTitle" column="vote_title"/>
+        <result property="voteDes" column="vote_des"/>
+        <result property="voteType" column="vote_type"/>
+    </resultMap>
+
+    <resultMap type="VoteItemInfo" id="VoteItemResultMap">
+        <id property="itemId" column="item_id"/>
+        <result property="itemDes" column="item_des"/>
+        <result property="itemRemarks" column="item_remarks"/>
+        <result property="voteId" column="vote_id"/>
+    </resultMap>
+
+    <select id="queryAllVote" resultMap="VoteResultMap">
+        SELECT vote_id,vote_title,vote_des,vote_type FROM vote
+    </select>
+
+    <select id="queryVoteById" resultType="VoteInfo">
+        SELECT vote_id,vote_title,vote_des,vote_type FROM vote where vote_id = #{voteId}
+    </select>
+
+    <select id="queryAllVoteItem" resultMap="VoteItemResultMap">
+        SELECT item_id,item_des,item_remarks,vote_id FROM vote_item
+                    where vote_id = #{voteId}
+    </select>
+
+    <delete id="deleteVoteById" parameterType="String">
+        DELETE FROM vote WHERE vote_id=#{id}
+    </delete>
+
+    <insert id="addVote" parameterType="VoteInfo">
+        INSERT INTO vote(vote_id,vote_title,vote_des,vote_type)
+                    VALUE (#{voteId},#{voteTitle}, #{voteDes}, #{voteType})
+    </insert>
+
+    <insert id="addVoteItem" parameterType="VoteItemInfo">
+        INSERT INTO vote_item(item_id,item_des,item_remarks,vote_id)
+                    VALUE (#{itemId},#{itemDes}, #{itemRemarks}, #{voteId})
+    </insert>
+
+    <update id="updateVote" parameterType="VoteInfo">
+        UPDATE vote
+        SET vote_title = #{voteTitle}, vote_des = #{voteDes}, vote_type = #{voteType}
+        WHERE  vote_id = #{voteId}
+    </update>
+
+    <update id="updateVoteItem" parameterType="VoteItemInfo">
+        UPDATE voteItem
+        SET item_des = #{itemDes}, item_remarks = #{itemRemarks}
+        WHERE  vote_id = #{voteId} and item_id=#{itemId}
+    </update>
+
+    <insert id="submitVote">
+        INSERT INTO user_vote(user_id,vote_id,user_vote_results)
+                    VALUE (#{0},#{1}, #{2})
+    </insert>
+
+    <insert id="insertUser">
+        INSERT INTO `user`(user_id,user_nickname) VALUE (#{0},#{1})
+    </insert>
+
+</mapper>

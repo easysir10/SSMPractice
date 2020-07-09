@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>投票系统 </title>
+
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
+    <link href="../../static/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/assets/css/plugins.css" rel="stylesheet" type="text/css"/>
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+    <!-- BEGIN PAGE LEVEL STYLES -->
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/datatables.css">
+    <link rel="stylesheet" type="text/css" href="../../static/assets/css/forms/theme-checkbox-radio.css">
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/dt-global_style.css">
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/custom_dt_html5.css">
+    <link href="../../static/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/dt-global_style.css">
+    <link href="../../static/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/assets/css/components/custom-modal.css" rel="stylesheet" type="text/css"/>
+    <!-- END PAGE LEVEL STYLES -->
+</head>
+<body>
+
+<!--  BEGIN NAVBAR  -->
+<div class="header-container fixed-top">
+    <header class="header navbar navbar-expand-sm">
+
+        <ul class="navbar-item theme-brand flex-row  text-center">
+            <li class="nav-item theme-logo">
+                <a href="/vote/allVote1">
+                    <img src="../../static/assets/img/laptop.jpg" class="navbar-logo" alt="logo">
+                </a>
+            </li>
+            <li class="nav-item theme-text">
+                <a href="/vote/allVote1" class="nav-link"> 投票系统 </a>
+            </li>
+        </ul>
+
+        <ul class="navbar-item flex-row ml-md-auto">
+            <li class="nav-item dropdown user-profile-dropdown">
+                <a href="/vote/allVote" class="nav-link dropdown-toggle user">
+                    <img src="../../static/assets/img/boy-2.png" alt="avatar">
+                    <div th:text="${session.nickname}"
+                         style="float: right;margin-left: 10px;font-size: 15px !important;color: #e0e6ed !important;"></div>
+                </a>
+            </li>
+        </ul>
+    </header>
+</div>
+<!--  END NAVBAR  -->
+
+<!--  BEGIN NAVBAR  -->
+<div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+        <a href="javascript:void(0);" class="sidebarCollapse">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="feather feather-home">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+            <li>
+                <div class="page-header">
+                    <nav class="breadcrumb-one" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active" aria-current="page"><span><a href="/vote/allVote1">主页</a></span>
+                            </li>
+                        </ol>
+                    </nav>
+
+                </div>
+            </li>
+        </ul>
+    </header>
+</div>
+<!--  END NAVBAR  -->
+
+<!--  BEGIN MAIN CONTAINER  -->
+<div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+
+            <div class="row layout-top-spacing">
+                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                    <div class="widget-content widget-content-area br-6">
+                        <div class="table-responsive mb-4 mt-4">
+                            <table id="vote-table" class="table table-hover" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>说明</th>
+                                    <th>类型</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vote: ${votes}">
+                                    <td th:text="${vote.voteTitle}"></td>
+                                    <td th:text="${vote.voteDes}"></td>
+                                    <td th:text="${vote.voteType}"></td>
+                                    <td>
+                                        <a th:href="'/vote/voting?voteId='+${vote.voteId}" class="btn btn-primary btn-sm mb-2">投票
+                                        </a>
+                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm mb-2">修改
+                                        </a>
+                                        <a href="javascript:void(0);" data-toggle="modal"
+                                           class="btn btn-primary btn-sm mb-2"
+                                           th:onclick="'details(\'' +${vote.voteId}+ '\');'">详情
+                                        </a>
+                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm mb-2">结果
+                                        </a>
+                                        <a href="javascript:void(0);" class="btn btn-danger btn-sm mb-2"
+                                           th:onclick="'confirmMsg(\'' +${vote.voteId}+ '\');'">删除
+                                        </a>
+                                    </td>
+                                    <div class="modal fade bd-example-modal-lg" th:id="'voteDetails'+${vote.voteId}" tabindex="-1" role="dialog"
+                                         aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <form action="/vote/addVote" method="post">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">投票信息</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                                 stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-row mb-0">
+                                                            <div class="form-group col-md-6">
+                                                                <label for="voteTitle">标题</label>
+                                                                <input type="text" class="form-control" th:value="${vote.voteTitle}" readonly>
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label>类型</label>
+                                                                <input type="text" class="form-control" th:value="${vote.voteType}" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group mb-4">
+                                                            <label>说明</label>
+                                                            <input type="text" class="form-control" th:value="${vote.voteDes}" readonly>
+                                                        </div>
+                                                        <div class="form-group mb-0" >
+
+                                                            <div class="form-row mb-0" th:each="item:${vote.items}">
+                                                                <div class="form-group mb-0 col-md-6">
+                                                                    <label>投票项</label>
+                                                                    <input type="text" class="form-control" th:value="${item.itemDes}" readonly>
+                                                                </div>
+                                                                <div class="form-group  mb-0 col-md-6">
+                                                                    <label>备注</label>
+                                                                    <div class="input-group mb-4">
+                                                                        <input type="text" class="form-control" th:value="${item.itemRemarks}" readonly>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>说明</th>
+                                    <th>类型</th>
+                                    <th>操作</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="footer-wrapper">
+            <div class="footer-section f-section-1">
+                <p class="">Copyright © 2020 <a target="_blank" href="/vote/allVote">DesignReset</a>, All rights <a
+                        href="http://www.bootstrapmb.com">Reserved </a>.</p>
+            </div>
+            <div class="footer-section f-section-2">
+                <p class="">Coded with
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="feather feather-heart">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" id="voteAdd" tabindex="-1" role="dialog"
+         aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <form action="/vote/addVote" method="post">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myLargeModalLabel">新建投票</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row mb-0">
+                            <div class="form-group col-md-6">
+                                <label for="voteTitle">标题（必填）</label>
+                                <input type="text" class="form-control" id="voteTitle" name="voteTitle"
+                                       placeholder="请输入投票标题..." required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="voteType">类型</label>
+                                <select id="voteType" name="voteType" class="form-control">
+                                    <option selected value="单项投票">单项投票</option>
+                                    <option value="多项投票">多项投票</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="voteDes">说明</label>
+                            <input type="text" class="form-control" id="voteDes" name="voteDes"
+                                   placeholder="请输入投票说明...">
+                        </div>
+                        <div class="form-group mb-0" id="voteItems">
+
+                            <div class="form-row mb-0">
+                                <div class="form-group mb-0 col-md-6">
+                                    <label>投票项（必填）</label>
+                                    <input type="text" class="form-control" name="voteItems[0].itemDes"
+                                           placeholder="请输入投票项..." required>
+                                </div>
+                                <div class="form-group  mb-0 col-md-6">
+                                    <label>备注</label>
+                                    <div class="input-group mb-4">
+                                        <input type="text" class="form-control" name="voteItems[0].itemRemarks"
+                                               placeholder="请输入备注信息...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row mb-0">
+                                <div class="form-group mb-0 col-md-6">
+                                    <label>投票项（必填）</label>
+                                    <input type="text" class="form-control" name="voteItems[1].itemDes"
+                                           placeholder="请输入投票项..." required>
+                                </div>
+                                <div class="form-group  mb-0 col-md-6">
+                                    <label>备注</label>
+                                    <div class="input-group mb-4">
+                                        <input type="text" class="form-control" name="voteItems[1].itemRemarks"
+                                               placeholder="请输入备注信息...">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button" onclick="addItem();">+
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> 取消</button>
+                        <button type="submit" class="btn btn-primary">新建</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<input id="message" th:value="${message}" hidden>
+<!-- END MAIN CONTAINER -->
+
+<!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+<script src="../../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+<script src="../../static/bootstrap/js/popper.min.js"></script>
+<script src="../../static/bootstrap/js/bootstrap.min.js"></script>
+<script src="../../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script src="../../static/assets/js/app.js"></script>
+<script src="../../static/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="../../static/plugins/sweetalerts/custom-sweetalert.js"></script>
+<script src="../../static/plugins/table/datatable/datatables.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/dataTables.buttons.min.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/jszip.min.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/buttons.html5.min.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/buttons.print.min.js"></script>
+<script src="../../static/assets/js/scrollspyNav.js"></script>
+
+<script>
+    $(document).ready(function () {
+        App.init();
+    });
+    var msg = $("#message").val();
+    if (msg !== '') {
+        swal(msg)
+    }
+
+    function confirmMsg(id) {
+        swal({
+            title: '确认删除?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '删除',
+            cancelButtonText: '取消',
+            padding: '2em'
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    url: "/vote/deleteVote?voteId=" + id,
+                    type: "post",
+                    success: function () {
+                        window.location.reload();
+                    }
+                });
+            }
+        })
+    }
+
+    function details(id) {
+        var modal = '#voteDetails'+id;
+        $(modal).modal('show');
+    }
+</script>
+<script src="../../static/assets/js/custom.js"></script>
+<!-- END GLOBAL MANDATORY SCRIPTS -->
+
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script>
+    $('#vote-table').DataTable({
+        dom: '<"row"<"col-md-12"<"row"<"col-md-6"B><"col-md-6"f> > ><"col-md-12"rt> <"col-md-12"<"row"<"col-md-5"i><"col-md-7"p>>> >',
+        buttons: {
+            buttons: [
+                {
+                    text: '新建投票', className: 'btn',
+                    action: function () {
+                        $('#voteAdd').modal('show');
+                    }
+                }
+            ]
+        },
+        "oLanguage": {
+            "oPaginate": {
+                "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
+                "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'
+            },
+            "sInfo": "Showing page _PAGE_ of _PAGES_",
+            "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+            "sSearchPlaceholder": "Search... "
+        },
+        "stripeClasses": [],
+        "lengthMenu": [5, 10, 20, 50],
+        "pageLength": 5,
+        "columnDefs": [
+            {
+                "targets": [3],
+                "width": 350
+            }
+        ]
+    });
+</script>
+<!-- END PAGE LEVEL SCRIPTS -->
+<script>
+    var n = 2;
+
+    function addItem() {
+        var id = new Date().getTime();
+        var item = "<div class='form-row mb-0' id=" + id + ">" +
+            "<div class='form-group mb-0 col-md-6'>" +
+            "<label>投票项（必填）</label>" +
+            "<input type='text' class='form-control' name='voteItems[" + n + "].itemDes' placeholder='请输入投票项...' required>" +
+            "</div>" +
+            "<div class='form-group  mb-0 col-md-6'>" +
+            "<label>备注</label>" +
+            "<div class='input-group mb-4'>" +
+            "<input type='text' class='form-control' name='voteItems[" + n + "].itemRemarks' placeholder='请输入备注信息...'>" +
+            "<div class='input-group-append'>" +
+            "<button class='btn btn-danger' type='button' onclick='reduceItem(" + id + ");'>-</button>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
+        $("#voteItems").append(item);
+        n++;
+    }
+
+    function reduceItem(id) {
+        document.getElementById("voteItems").removeChild(document.getElementById(id));
+        n--;
+    }
+</script>
+</body>
+</html>

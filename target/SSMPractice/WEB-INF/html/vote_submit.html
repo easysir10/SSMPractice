@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>投票系统 </title>
+
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
+    <link href="../../static/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/assets/css/plugins.css" rel="stylesheet" type="text/css"/>
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+    <!-- BEGIN PAGE LEVEL STYLES -->
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/datatables.css">
+    <link rel="stylesheet" type="text/css" href="../../static/assets/css/forms/theme-checkbox-radio.css">
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/dt-global_style.css">
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/custom_dt_html5.css">
+    <link href="../../static/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/plugins/table/datatable/dt-global_style.css">
+    <link href="../../static/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/assets/css/components/custom-modal.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/assets/css/forms/theme-checkbox-radio.css">
+    <!-- END PAGE LEVEL STYLES -->
+</head>
+<body>
+
+<!--  BEGIN NAVBAR  -->
+<div class="header-container fixed-top">
+    <header class="header navbar navbar-expand-sm">
+
+        <ul class="navbar-item theme-brand flex-row  text-center">
+            <li class="nav-item theme-logo">
+                <a href="/vote/allVote1">
+                    <img src="../../static/assets/img/laptop.jpg" class="navbar-logo" alt="logo">
+                </a>
+            </li>
+            <li class="nav-item theme-text">
+                <a href="vote/allVote1" class="nav-link"> 投票系统 </a>
+            </li>
+        </ul>
+
+        <ul class="navbar-item flex-row ml-md-auto">
+            <li class="nav-item dropdown user-profile-dropdown">
+                <a href="/vote/allVote" class="nav-link dropdown-toggle user">
+                    <img src="../../static/assets/img/boy-2.png" alt="avatar">
+                    <div th:text="${session.nickname}"
+                         style="float: right;margin-left: 10px;font-size: 15px !important;color: #e0e6ed !important;"></div>
+                </a>
+            </li>
+        </ul>
+    </header>
+</div>
+<!--  END NAVBAR  -->
+
+<!--  BEGIN NAVBAR  -->
+<div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+        <a href="javascript:void(0);" class="sidebarCollapse">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="feather feather-home">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+            <li>
+                <div class="page-header">
+                    <nav class="breadcrumb-one" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active" aria-current="page"><span><a
+                                    href="/vote/allVote1">主页</a><a th:text="'/投票-'+${vote.voteTitle}"></a></span>
+                            </li>
+                        </ol>
+                    </nav>
+
+                </div>
+            </li>
+        </ul>
+    </header>
+</div>
+<!--  END NAVBAR  -->
+
+<!--  BEGIN MAIN CONTAINER  -->
+<div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+
+            <div class="row layout-top-spacing">
+                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+
+                    <div id="typographyLists" class="col-lg-6 mx-auto layout-spacing filtered-list-search">
+                        <div class="statbox widget box box-shadow">
+                            <div class="widget-header">
+                                <div class="row">
+                                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                                        <h4 th:text="${vote.voteTitle}+'('+${vote.voteType}+')'"> </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="widget-content widget-content-area">
+                                <form action="/vote/submitVote" method="post">
+                                    <div class="row">
+                                        <div class="col-xl-6">
+                                            <input name="voteId" th:value="${vote.voteId}" hidden>
+                                            <div class="n-chk" th:if="${vote.voteType eq '多项投票'}" th:each="item:${vote.items}">
+                                                <label class="new-control new-radio new-radio-text radio-primary">
+                                                    <input type="checkbox" class="new-control-input"
+                                                           name="voteItems[0].itemId" th:value="${item.itemId}">
+                                                    <span class="new-control-indicator"></span><span
+                                                        class="new-radio-content" style="font-weight: normal" th:text="${item.itemDes}"></span>
+                                                </label>
+                                            </div>
+
+                                            <div class="n-chk" th:if="${vote.voteType eq '单项投票'}" th:each="item:${vote.items}">
+                                                <label class="new-control new-radio radio-primary">
+                                                    <input type="radio" class="new-control-input"
+                                                           name="voteItems[0].itemId" th:value="${item.itemId}">
+                                                    <span class="new-control-indicator"></span><span
+                                                        class="new-radio-content" style="font-weight: normal" th:text="${item.itemDes}"></span>
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn"><i class="flaticon-cancel-12"></i> <a href="/vote/allVote1">取消</a></button>
+                                        <button type="submit" class="btn btn-primary">提交</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="footer-wrapper">
+            <div class="footer-section f-section-1">
+                <p class="">Copyright © 2020 <a target="_blank" href="/vote/allVote">DesignReset</a>, All rights <a
+                        href="http://www.bootstrapmb.com">Reserved </a>.</p>
+            </div>
+            <div class="footer-section f-section-2">
+                <p class="">Coded with
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="feather feather-heart">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<input id="message" th:value="${message}" hidden>
+<!-- END MAIN CONTAINER -->
+
+<!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+<script src="../../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+<script src="../../static/bootstrap/js/popper.min.js"></script>
+<script src="../../static/bootstrap/js/bootstrap.min.js"></script>
+<script src="../../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script src="../../static/assets/js/app.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/dataTables.buttons.min.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/jszip.min.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/buttons.html5.min.js"></script>
+<script src="../../static/plugins/table/datatable/button-ext/buttons.print.min.js"></script>
+<script src="../../static/assets/js/scrollspyNav.js"></script>
+
+<script>
+    $(document).ready(function () {
+        App.init();
+    });
+    var msg = $("#message").val();
+    if (msg !== '') {
+        swal(msg)
+    }
+</script>
+<script src="../../static/assets/js/custom.js"></script>
+</body>
+</html>
