@@ -1,9 +1,11 @@
 package dao;
 
+import info.UserVoteInfo;
 import info.VoteInfo;
 import info.VoteItemInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 投票信息数据库dao层
@@ -93,4 +95,18 @@ public interface VoteDao {
      * @return int 影响行数，成功为1，失败为0
      */
     int insertUser(String userId,String nickname);
+
+    /**
+     *
+     * @author Hu.Wang 2020-07-07 15:15
+     * @return List 用户投票结果
+     */
+    List<UserVoteInfo> queryUserVote(String voteId);
+
+    /**
+     *
+     * @author Hu.Wang 2020-07-07 15:15
+     * @return Map 统计结果
+     */
+    List<Map> queryResults(String voteId);
 }

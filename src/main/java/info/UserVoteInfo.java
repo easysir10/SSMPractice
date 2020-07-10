@@ -8,8 +8,10 @@ package info;
 public class UserVoteInfo {
 
     private String userId;          // 用户id
+    private String userNickname;    // 用户昵称
     private String voteId;          // 投票id
-    private String userVoteResults; // 投票结果（多项用逗号隔开）
+    private String userVoteResults; // 投票结果
+    private String itemDes;         // 投票项
 
     public String getUserId() {
         return userId;
@@ -35,12 +37,30 @@ public class UserVoteInfo {
         this.userVoteResults = userVoteResults;
     }
 
+    public String getUserNickname() {
+        return userNickname;
+    }
+
+    public void setUserNickname(String userNickname) {
+        this.userNickname = userNickname;
+    }
+
+    public String getItemDes() {
+        return itemDes;
+    }
+
+    public void setItemDes(String itemDes) {
+        this.itemDes = itemDes;
+    }
+
     @Override
     public String toString() {
         return "UserVoteInfo{" +
                 "userId='" + userId + '\'' +
+                ", userNickname='" + userNickname + '\'' +
                 ", voteId='" + voteId + '\'' +
                 ", userVoteResults='" + userVoteResults + '\'' +
+                ", itemDes='" + itemDes + '\'' +
                 '}';
     }
 }

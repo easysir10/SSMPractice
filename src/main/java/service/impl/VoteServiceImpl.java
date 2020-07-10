@@ -1,6 +1,7 @@
 package service.impl;
 
 import dao.VoteDao;
+import info.UserVoteInfo;
 import info.VoteInfo;
 import info.VoteItemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,10 @@ import org.springframework.stereotype.Service;
 import service.VoteService;
 import utils.UUIDUtils;
 
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * description
@@ -20,6 +24,8 @@ public class VoteServiceImpl implements VoteService {
 
     @Autowired
     VoteDao voteDao;
+    @Autowired
+    HttpSession session;
 
     /**
      * @return List<VoteInfo> 投票信息列表
@@ -32,10 +38,11 @@ public class VoteServiceImpl implements VoteService {
 
         // 查询所有的投票项信息
         for (VoteInfo voteInfo : voteInfos) {
+            System.out.println(voteDao.queryAllVoteItem(voteInfo.getVoteId()).get(0).toString());
             voteInfo.setItems(voteDao.queryAllVoteItem(voteInfo.getVoteId()));
         }
 
-        return voteDao.queryAllVote();
+        return voteInfos;
     }
 
     /**
@@ -59,6 +66,9 @@ public class VoteServiceImpl implements VoteService {
      */
     @Override
     public int deleteVoteById(String id) {
+        Map<String,Integer> map = (Map<String, Integer>) session.getAttribute("flag");
+        map.remove(id);
+        session.setAttribute("flag",map);
         return voteDao.deleteVoteById(id);
     }
 
@@ -83,7 +93,9 @@ public class VoteServiceImpl implements VoteService {
             itemInfo.setVoteId(voteInfo.getVoteId());
             result += voteDao.addVoteItem(itemInfo);
         }
-
+        Map<String,Integer> map = (Map<String, Integer>) session.getAttribute("flag");
+        map.put(voteInfo.getVoteId(),0);
+        session.setAttribute("flag",map);
         return result;
     }
 
@@ -108,20 +120,21 @@ public class VoteServiceImpl implements VoteService {
     /**
      * @param userId 用户id
      * @param voteId 投票id
-     * @param items 投票项
+     * @param itemIds 投票项id
      * @return int 影响行数，成功为1，失败为0
      * @author Hu.Wang 2020-07-07 15:15
      */
     @Override
-    public int submitVote(String userId, String voteId, List<VoteItemInfo> items) {
+    public int submitVote(String userId, String voteId, String itemIds) {
 
-        // 获取投票结果项id
-        StringBuilder results = new StringBuilder();
-        for (VoteItemInfo itemInfo : items) {
-            results.append(itemInfo.getItemId());
+        int result = 0;
+        String[] itemIdList = itemIds.split(",");
+        // 插入用户投票数据
+        for (String itemId : itemIdList) {
+            System.out.println("id:"+itemId);
+            result += voteDao.submitVote(userId,voteId,itemId);
         }
-
-        return voteDao.submitVote(userId,voteId,results.toString());
+        return result;
     }
 
     /**
@@ -130,7 +143,41 @@ public class VoteServiceImpl implements VoteService {
      */
     @Override
     public int insertUser(String userId, String nickname) {
-        return voteDao.insertUser(userId,nickname);
+        return voteDao.insertUser(userId, nickname);
+    }
+
+    /**
+     * @param voteId 投票id
+     * @return List 用户投票结果
+     * @author Hu.Wang 2020-07-07 15:15
+     */
+    @Override
+    public List<UserVoteInfo> queryUserVote(String voteId) {
+        return voteDao.queryUserVote(voteId);
+    }
+
+    /**
+     * @param voteId 投票id
+     * @return Map 统计结果
+     * @author Hu.Wang 2020-07-07 15:15
+     */
+    @Override
+    public List queryResults(String voteId) {
+
+        // 获取统计结果
+        List<Map> listMap = voteDao.queryResults(voteId);
+
+        List<Object> list = new ArrayList<>();
+        List<String> list1 = new ArrayList<>();
+        List<Integer> list2 = new ArrayList<>();
+        // 将数据格式化（为前端配置数据源）
+        for (Map map : listMap){
+            list1.add((String) map.get("item"));
+            list2.add(Integer.parseInt(map.get("count").toString()));
+        }
+        list.add(list1.toArray());
+        list.add(list2.toArray());
+        return list;
     }
 
 

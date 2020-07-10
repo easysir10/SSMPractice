@@ -112,31 +112,123 @@
                                     <td th:text="${vote.voteDes}"></td>
                                     <td th:text="${vote.voteType}"></td>
                                     <td>
-                                        <a th:href="'/vote/voting?voteId='+${vote.voteId}" class="btn btn-primary btn-sm mb-2">投票
+                                        <a th:if="${session.flag.get(vote.voteId) eq 0}"
+                                           th:href="'/vote/voting?voteId='+${vote.voteId}"
+                                           class="btn btn-primary btn-sm mb-2">投票
                                         </a>
-                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm mb-2">修改
+                                        <a th:if="${session.flag.get(vote.voteId) eq 1}"
+                                           href="javascript:void(0);"
+                                           class="btn btn-primary btn-sm mb-2 disabled">已投
                                         </a>
-                                        <a href="javascript:void(0);" data-toggle="modal"
-                                           class="btn btn-primary btn-sm mb-2"
+
+                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm mb-2"
+                                           th:onclick="'voteAlter(\'' +${vote.voteId}+ '\');'">修改
+                                        </a>
+                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm mb-2"
                                            th:onclick="'details(\'' +${vote.voteId}+ '\');'">详情
                                         </a>
-                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm mb-2">结果
+                                        <a th:href="'/vote/voteResults?voteId='+${vote.voteId}"
+                                           href="javascript:void(0);" class="btn btn-primary btn-sm mb-2">结果
                                         </a>
                                         <a href="javascript:void(0);" class="btn btn-danger btn-sm mb-2"
                                            th:onclick="'confirmMsg(\'' +${vote.voteId}+ '\');'">删除
                                         </a>
                                     </td>
-                                    <div class="modal fade bd-example-modal-lg" th:id="'voteDetails'+${vote.voteId}" tabindex="-1" role="dialog"
+                                    <div class="modal fade bd-example-modal-lg" th:id="'voteAlter'+${vote.voteId}"
+                                         tabindex="-1" role="dialog"
+                                         aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <form action="/vote/updateVote" method="post">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">修改投票信息</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                                 width="24" height="24"
+                                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                 stroke-width="2"
+                                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                                 class="feather feather-x">
+                                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-row mb-0">
+                                                            <input name="voteId" th:value="${vote.voteId}" hidden>
+                                                            <div class="form-group col-md-6">
+                                                                <label>标题（必填）</label>
+                                                                <input type="text" class="form-control" name="voteTitle"
+                                                                       th:value="${vote.voteTitle}"
+                                                                       placeholder="请输入投票标题..." required>
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label>类型</label>
+                                                                <input name="voteType" type="text" class="form-control"
+                                                                       th:value="${vote.voteType}" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group mb-4">
+                                                            <label>说明</label>
+                                                            <input type="text" class="form-control" name="voteDes"
+                                                                   th:value="${vote.voteDes}" placeholder="请输入投票说明...">
+                                                        </div>
+                                                        <div class="form-group mb-0"
+                                                             th:id="'voteItems0'+${vote.voteId}">
+
+                                                            <div class="form-row mb-0" th:each="item:${vote.items}">
+                                                                <input th:name="'voteItems['+${itemStat.index}+'].itemId'"
+                                                                       th:value="${item.itemId}" hidden>
+                                                                <input th:name="'voteItems['+${itemStat.index}+'].voteId'"
+                                                                       th:value="${item.voteId}" hidden>
+                                                                <div class="form-group mb-0 col-md-6">
+                                                                    <label>投票项（必填）</label>
+                                                                    <input type="text" class="form-control"
+                                                                           th:name="'voteItems['+${itemStat.index}+'].itemDes'"
+                                                                           th:value="${item.itemDes}"
+                                                                           placeholder="请输入投票项..." required>
+                                                                </div>
+                                                                <div class="form-group  mb-0 col-md-6">
+                                                                    <label>备注</label>
+                                                                    <div class="input-group mb-4">
+                                                                        <input type="text" class="form-control"
+                                                                               th:name="'voteItems['+${itemStat.index}+'].itemRemarks'"
+                                                                               th:value="${item.itemRemarks}"
+                                                                               placeholder="请输入备注信息...">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn" data-dismiss="modal"><i
+                                                                class="flaticon-cancel-12"></i> 取消
+                                                        </button>
+                                                        <button type="submit" class="btn btn-primary">修改</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade bd-example-modal-lg" th:id="'voteDetails'+${vote.voteId}"
+                                         tabindex="-1" role="dialog"
                                          aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <form action="/vote/addVote" method="post">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title">投票信息</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                                 stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                                 width="24" height="24"
+                                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                 stroke-width="2"
+                                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                                 class="feather feather-x">
                                                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                                                             </svg>
@@ -146,28 +238,33 @@
                                                         <div class="form-row mb-0">
                                                             <div class="form-group col-md-6">
                                                                 <label for="voteTitle">标题</label>
-                                                                <input type="text" class="form-control" th:value="${vote.voteTitle}" readonly>
+                                                                <input type="text" class="form-control"
+                                                                       th:value="${vote.voteTitle}" readonly>
                                                             </div>
                                                             <div class="form-group col-md-6">
                                                                 <label>类型</label>
-                                                                <input type="text" class="form-control" th:value="${vote.voteType}" readonly>
+                                                                <input type="text" class="form-control"
+                                                                       th:value="${vote.voteType}" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group mb-4">
                                                             <label>说明</label>
-                                                            <input type="text" class="form-control" th:value="${vote.voteDes}" readonly>
+                                                            <input type="text" class="form-control"
+                                                                   th:value="${vote.voteDes}" readonly>
                                                         </div>
-                                                        <div class="form-group mb-0" >
+                                                        <div class="form-group mb-0">
 
                                                             <div class="form-row mb-0" th:each="item:${vote.items}">
                                                                 <div class="form-group mb-0 col-md-6">
                                                                     <label>投票项</label>
-                                                                    <input type="text" class="form-control" th:value="${item.itemDes}" readonly>
+                                                                    <input type="text" class="form-control"
+                                                                           th:value="${item.itemDes}" readonly>
                                                                 </div>
                                                                 <div class="form-group  mb-0 col-md-6">
                                                                     <label>备注</label>
                                                                     <div class="input-group mb-4">
-                                                                        <input type="text" class="form-control" th:value="${item.itemRemarks}" readonly>
+                                                                        <input type="text" class="form-control"
+                                                                               th:value="${item.itemRemarks}" readonly>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -197,7 +294,7 @@
         </div>
         <div class="footer-wrapper">
             <div class="footer-section f-section-1">
-                <p class="">Copyright © 2020 <a target="_blank" href="/vote/allVote">DesignReset</a>, All rights <a
+                <p class="">Copyright © 2020 <a target="_blank" href="/vote/allVote1">DesignReset</a>, All rights <a
                         href="http://www.bootstrapmb.com">Reserved </a>.</p>
             </div>
             <div class="footer-section f-section-2">
@@ -344,7 +441,12 @@
     }
 
     function details(id) {
-        var modal = '#voteDetails'+id;
+        var modal = '#voteDetails' + id;
+        $(modal).modal('show');
+    }
+
+    function voteAlter(id) {
+        var modal = '#voteAlter' + id;
         $(modal).modal('show');
     }
 </script>
@@ -414,6 +516,39 @@
         document.getElementById("voteItems").removeChild(document.getElementById(id));
         n--;
     }
+</script>
+<script>
+    var n = 2;
+
+    function reduceItem0(id, voteId) {
+        alert('123');
+        // alert(id + '|||' + voteId);
+        // document.getElementById("voteItems0" + voteId).removeChild(document.getElementById("item" + id));
+        // n--;
+    }
+
+    function addItem0(voteId) {
+        var id = new Date().getTime();
+        var item = "<div class='form-row mb-0' id=item" + id + ">" +
+            "<div class='form-group mb-0 col-md-6'>" +
+            "<label>投票项（必填）</label>" +
+            "<input type='text' class='form-control' name='voteItems[" + n + "].itemDes' placeholder='请输入投票项...' required>" +
+            "</div>" +
+            "<div class='form-group  mb-0 col-md-6'>" +
+            "<label>备注</label>" +
+            "<div class='input-group mb-4'>" +
+            "<input type='text' class='form-control' name='voteItems[" + n + "].itemRemarks' placeholder='请输入备注信息...'>" +
+            "<div class='input-group-append'>" +
+            "<button class='btn btn-danger' type='button' onclick='reduceItem0(" + id + "," + voteId + ");'>-</button>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
+        alert(voteId);
+        $("#voteItems0" + voteId).append(item);
+        n++;
+    }
+
 </script>
 </body>
 </html>

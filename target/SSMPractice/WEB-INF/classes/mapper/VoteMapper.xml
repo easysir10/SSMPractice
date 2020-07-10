@@ -18,6 +18,13 @@
         <result property="voteId" column="vote_id"/>
     </resultMap>
 
+    <resultMap type="UserVoteInfo" id="UserVoteResultMap">
+        <id property="userId" column="user_id"/>
+        <result property="userNickname" column="user_nickname"/>
+        <result property="userVoteResult" column="user_vote_result"/>
+        <result property="itemDes" column="item_des"/>
+    </resultMap>
+
     <select id="queryAllVote" resultMap="VoteResultMap">
         SELECT vote_id,vote_title,vote_des,vote_type FROM vote
     </select>
@@ -52,7 +59,7 @@
     </update>
 
     <update id="updateVoteItem" parameterType="VoteItemInfo">
-        UPDATE voteItem
+        UPDATE vote_item
         SET item_des = #{itemDes}, item_remarks = #{itemRemarks}
         WHERE  vote_id = #{voteId} and item_id=#{itemId}
     </update>
@@ -65,5 +72,35 @@
     <insert id="insertUser">
         INSERT INTO `user`(user_id,user_nickname) VALUE (#{0},#{1})
     </insert>
+
+    <select id="queryUserVote" resultMap="UserVoteResultMap" parameterType="String">
+        SELECT
+            uv.user_id user_id,
+            u.user_nickname user_nickname,
+            uv.user_vote_results user_vote_results,
+            vi.item_des item_des
+        FROM
+            `user` u,
+            vote_item vi,
+            user_vote uv
+        WHERE
+            u.user_id = uv.user_id
+            AND vi.item_id = uv.user_vote_results
+            AND uv.vote_id = #{0};
+	</select>
+
+    <select id="queryResults" resultType="java.util.Map" parameterType="String">
+        SELECT
+            vi.item_des AS item,
+            COUNT( * ) AS count
+        FROM
+            user_vote uv,
+            vote_item vi
+        WHERE
+            uv.vote_id = #{0}
+            AND vi.item_id = uv.user_vote_results
+        GROUP BY
+            uv.user_vote_results;
+	</select>
 
 </mapper>

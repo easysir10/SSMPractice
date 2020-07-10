@@ -1,7 +1,7 @@
 package service;
 
+import info.UserVoteInfo;
 import info.VoteInfo;
-import info.VoteItemInfo;
 
 import java.util.List;
 
@@ -55,11 +55,11 @@ public interface VoteService {
      *
      * @param userId    用户id
      * @param voteId    投票id
-     * @param items   投票项
+     * @param itemIds   投票项
      * @author Hu.Wang 2020-07-07 15:15
      * @return int 影响行数，成功为1，失败为0
      */
-    int submitVote(String userId,String voteId,List<VoteItemInfo> items);
+    int submitVote(String userId,String voteId,String itemIds);
 
     /**
      *
@@ -67,4 +67,18 @@ public interface VoteService {
      * @return int 影响行数，成功为1，失败为0
      */
     int insertUser(String userId,String nickname);
+
+    /**
+     *
+     * @author Hu.Wang 2020-07-07 15:15
+     * @return List 用户投票结果
+     */
+    List<UserVoteInfo> queryUserVote(String voteId);
+
+    /**
+     *
+     * @author Hu.Wang 2020-07-07 15:15
+     * @return List 统计结果
+     */
+    List queryResults(String voteId);
 }

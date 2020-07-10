@@ -108,14 +108,14 @@
                                 </div>
                             </div>
                             <div class="widget-content widget-content-area">
-                                <form action="/vote/submitVote" method="post">
+                                <form action="/vote/submitVote" method="post" onsubmit="return checkSelect();">
                                     <div class="row">
                                         <div class="col-xl-6">
                                             <input name="voteId" th:value="${vote.voteId}" hidden>
                                             <div class="n-chk" th:if="${vote.voteType eq '多项投票'}" th:each="item:${vote.items}">
                                                 <label class="new-control new-radio new-radio-text radio-primary">
                                                     <input type="checkbox" class="new-control-input"
-                                                           name="voteItems[0].itemId" th:value="${item.itemId}">
+                                                           name="itemId" th:value="${item.itemId}">
                                                     <span class="new-control-indicator"></span><span
                                                         class="new-radio-content" style="font-weight: normal" th:text="${item.itemDes}"></span>
                                                 </label>
@@ -124,7 +124,7 @@
                                             <div class="n-chk" th:if="${vote.voteType eq '单项投票'}" th:each="item:${vote.items}">
                                                 <label class="new-control new-radio radio-primary">
                                                     <input type="radio" class="new-control-input"
-                                                           name="voteItems[0].itemId" th:value="${item.itemId}">
+                                                           name="itemId" th:value="${item.itemId}">
                                                     <span class="new-control-indicator"></span><span
                                                         class="new-radio-content" style="font-weight: normal" th:text="${item.itemDes}"></span>
                                                 </label>
@@ -133,7 +133,7 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn"><i class="flaticon-cancel-12"></i> <a href="/vote/allVote1">取消</a></button>
+                                        <button class="btn" type="button"><i class="flaticon-cancel-12"></i> <a href="/vote/allVote1">取消</a></button>
                                         <button type="submit" class="btn btn-primary">提交</button>
                                     </div>
                                 </form>
@@ -170,6 +170,8 @@
 <script src="../../static/bootstrap/js/bootstrap.min.js"></script>
 <script src="../../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 <script src="../../static/assets/js/app.js"></script>
+<script src="../../static/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="../../static/plugins/sweetalerts/custom-sweetalert.js"></script>
 <script src="../../static/plugins/table/datatable/button-ext/dataTables.buttons.min.js"></script>
 <script src="../../static/plugins/table/datatable/button-ext/jszip.min.js"></script>
 <script src="../../static/plugins/table/datatable/button-ext/buttons.html5.min.js"></script>
@@ -183,6 +185,15 @@
     var msg = $("#message").val();
     if (msg !== '') {
         swal(msg)
+    }
+
+    function checkSelect() {
+        if($("input[name='itemId']:checked").length>0){
+            return true;
+        }else {
+            swal("请选择后提交！");
+            return false;
+        }
     }
 </script>
 <script src="../../static/assets/js/custom.js"></script>
